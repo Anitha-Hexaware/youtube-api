@@ -1,6 +1,5 @@
-import React, {
-    Component
-} from 'react';
+import React, {Component} from 'react';
+import _ from 'lodash';
 import ReactDOM from 'react-DOM';
 import SearchBar from './Component/search_bar';
 import youAPISearch from 'youtube-api-search';
@@ -18,29 +17,34 @@ class App extends Component {
             videos : [],
             selectedVideo: null
         };
+       this.videoSearch('Blockchain');
+    }
 
-
+    videoSearch(term) {
         youAPISearch({
             key: ApiKey,
-            term: 'blockchains'
+            term: term
         }, (videos) =>  {
-            // this.setState({videos : videos});
             this.setState({
                 videos : videos,
                 selectedVideo : videos[0]
             });
-            console.log(videos);
+            // console.log(videos);
 
-        });
+        }); 
     }
 
-
     render() {
+
+        const videoSearch = _.debounce((term) => {this.videoSearch(term)}, 300)
+
         return ( 
         <div>
-            <SearchBar/>
+            <SearchBar onSearchTermChange = {videoSearch} />
             <VideoDetail video ={this.state.selectedVideo} />
-            <VideoList videos = {this.state.videos}/>
+            <VideoList 
+            onVideoSelect = {selectedVideo => this.setState({selectedVideo})}
+            videos = {this.state.videos}/>
             </div>
             );
         }
